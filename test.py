@@ -69,7 +69,8 @@ async def test(test_data_dir, labId, ckpt_number, model_type):
     #yield for backend.
 
     return {
-            "test_acc": test_acc
+            "test_acc": test_acc,
+            "model_checkpoint_number": ckpt_number
           } 
 
 if __name__ == '__main__':

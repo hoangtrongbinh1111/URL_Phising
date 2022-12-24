@@ -69,7 +69,9 @@ async def infer(url_sample, labId, ckpt_number, model_type):
     #yield to backend
     return {
         "label": label,
-        "score": score
+        "score": score,
+        "url": url_sample,
+        "model_checkpoint_number": ckpt_number
         }
 
 

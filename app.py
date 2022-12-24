@@ -50,7 +50,7 @@ async def start_training(data):
     async for response in train(data["data_dir"],data["learning_rate"], data["epochs"], data["batch_size"], data["val_size"], data["model_type"], data["labId"]):
         await sio.emit(f'receive_training_process', json.dumps({
             "response": response,
-            "sid": data["sid"],
+            "labId": data["labId"],
         }))
         await sio.sleep(0.1)
 
@@ -58,7 +58,7 @@ async def start_testing(data):
     response = await test(data["test_data_dir"],data["labId"],data["ckpt_number"],data["model_type"])
     await sio.emit(f'receive_testing_process',json.dumps({
         "response": response,
-        "sid" : data["sid"],
+        "labId" : data["labId"],
     }))
     await sio.sleep(0.1)   
 
@@ -67,7 +67,7 @@ async def start_infering(data):
     print(response)
     await sio.emit(f'receive_infering_process',json.dumps({
         "response": response,
-        "sid" : data["sid"],
+        "labId" : data["labId"],
     }))
     await sio.sleep(0.1)
 
