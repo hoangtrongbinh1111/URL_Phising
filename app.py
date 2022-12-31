@@ -14,7 +14,7 @@ from train import train
 from test import test
 from inference import infer
 
-SOCKET_BACKEND_URL = 'http://172.18.0.1:6789'
+SOCKET_BACKEND_URL = 'http://192.168.0.167:6789'
 PORT = 5678
 
 app = FastAPI()
@@ -51,6 +51,7 @@ async def start_training(data):
         await sio.emit(f'receive_training_process', json.dumps({
             "response": response,
             "labId": data["labId"],
+            "trainId": data["trainId"]
         }))
         await sio.sleep(0.1)
 
@@ -59,6 +60,7 @@ async def start_testing(data):
     await sio.emit(f'receive_testing_process',json.dumps({
         "response": response,
         "labId" : data["labId"],
+        "testId": data["testId"]
     }))
     await sio.sleep(0.1)   
 
@@ -68,6 +70,7 @@ async def start_infering(data):
     await sio.emit(f'receive_infering_process',json.dumps({
         "response": response,
         "labId" : data["labId"],
+        "inferId": data["inferId"]
     }))
     await sio.sleep(0.1)
 
