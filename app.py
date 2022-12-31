@@ -14,7 +14,7 @@ from train import train
 from test import test
 from inference import infer
 
-SOCKET_BACKEND_URL = 'http://172.18.0.1:6789'
+SOCKET_BACKEND_URL = 'http://192.168.10.33:6789'
 PORT = 5678
 
 app = FastAPI()
@@ -92,4 +92,4 @@ async def disconnect():
     print('disconnected from server')
 
 if __name__ == '__main__':
-    uvicorn.run("app:app", host="0.0.0.0", port=PORT, reload=True, debug=True, ws_ping_interval = 99999999, ws_ping_timeout = 99999999)
+    uvicorn.run("app:app", host="0.0.0.0", port=PORT, reload=True, debug=True, ws_ping_interval = 999999999999, ws_ping_timeout = 999999999999)

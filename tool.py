@@ -45,7 +45,7 @@ import tensorflow as tf
 def get_train_data(train_data_dir, val_size):
     """load urls from the specified directory"""
     if Path(train_data_dir).is_file() and Path(train_data_dir).suffix == '.csv':
-        data = pd.read_csv(train_data_dir,sep=',').sample(n = 2000, random_state = 4)
+        data = pd.read_csv(train_data_dir,sep=',').sample(n = 200, random_state = 4)
         urls, temp = list(data['url']), list(data['Label'])
         labels = []
         for l in temp:
