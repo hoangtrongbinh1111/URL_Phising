@@ -57,7 +57,6 @@ async def test(test_data_dir, labId, ckpt_number, model_type):
     #Get testing data
     testX, testY = get_test_data(test_data_dir, tokenizer)
     number_sample = testX.shape[0]
-    print("===>alo")
     #Inference testing data and compute accuracy
     prediction = model(testX)
     prediction = tf.argmax(prediction, axis = 1)

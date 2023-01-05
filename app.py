@@ -8,11 +8,13 @@ from fastapi.middleware.cors import CORSMiddleware
 # from fastapi_sockeimtio import SocketManager
 import socketio
 import json
+import pickle
 import uvicorn
 import asyncio
 from train import train
 from test import test
 from inference import infer
+from tool import *
 
 SOCKET_BACKEND_URL = 'http://192.168.10.33:6789'
 PORT = 5678
@@ -74,6 +76,27 @@ async def start_infering(data):
     }))
     await sio.sleep(0.1)
 
+async def start_reviewing_dataset(data):
+    trainX, valX, trainY, valY, tokenizer, embedding_matrix = get_train_data(data["data_dir"], data["val_size"])
+    model_dir = f'./modelDir/{data["labId"]}/log_train/{data["model_type"]}'
+
+    #Get tokenizer from file
+    tokenizer_file = open(os.path.join (model_dir,'tokenizer.pkl'), 'rb')
+    tokenizer = pickle.load(tokenizer_file)
+    tokenizer_file.close()
+    testX, testY = get_test_data(data["test_data_dir"], tokenizer)
+
+    await sio.emit(f'receive_reviewing_dataset_process',json.dumps({
+        "response": {
+            "numTrain": trainX.shape[0],
+            "numVal": valX.shape[0],
+            "numTest": testX.shape[0],
+        },
+        "labId" : data["labId"],
+        "datasetId" : data["datasetId"],
+    }))
+    await sio.sleep(0.1)
+
 @sio.on("start_training")
 async def start_training_listener(data):
     Thread(target = await start_training(data)).start()
@@ -84,10 +107,13 @@ async def start_training_listener(data):
 async def start_testing_listener(data):
     Thread(target= await start_testing(data)).start()
 
-
 @sio.on("start_infering")
 async def start_infering_listener(data):
     Thread(target= await start_infering(data)).start()
+
+@sio.on("start_reviewing_dataset")
+async def start_reviewing_dataset_listener(data):
+    Thread(target= await start_reviewing_dataset(data)).start()
 
 
 @sio.event
