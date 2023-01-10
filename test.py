@@ -6,7 +6,7 @@ from tool import get_model, get_test_data
 # import pdb
 import numpy as np
 # os.environ["CUDA_VISIBLE_DEVICES"]="1"
-async def test(test_data_dir, labId, ckpt_number, model_type):
+async def test(test_data_dir, labId, ckpt_number, model_type, sample_model_dir = ''):
     """
     Testing trained models.
 
@@ -33,8 +33,10 @@ async def test(test_data_dir, labId, ckpt_number, model_type):
     test_acc = 0
     
     #Model directory
-    model_dir = f'./modelDir/{labId}/log_train/{model_type}'
-    print(model_dir)
+    if sample_model_dir:
+      model_dir = sample_model_dir
+    else:
+      model_dir = f'./modelDir/{labId}/log_train/{model_type}'
 
     #Get tokenizer from file
     tokenizer_file = open(os.path.join (model_dir,'tokenizer.pkl'), 'rb')
@@ -47,7 +49,7 @@ async def test(test_data_dir, labId, ckpt_number, model_type):
     embeding_matrix_file.close()
 
     #Checkpoint path
-    ckpt_path = os.path.join (model_dir, 'ckpt-'+str (ckpt_number))
+    ckpt_path =  os.path.join (model_dir, 'ckpt-'+str (ckpt_number))
 
     #Get model and load model from checkpoint path
     model = get_model(tokenizer=tokenizer, embedding_matrix = embeding_matrix, rnn_cell= model_type)
