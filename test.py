@@ -49,7 +49,10 @@ async def test(test_data_dir, labId, ckpt_number, model_type, sample_model_dir =
     embeding_matrix_file.close()
 
     #Checkpoint path
-    ckpt_path =  os.path.join (model_dir, 'ckpt-'+str (ckpt_number))
+    if sample_model_dir:
+      ckpt_path =  os.path.join (model_dir, 'ckpt')
+    else:
+      ckpt_path =  os.path.join (model_dir, 'ckpt-'+str (ckpt_number))
 
     #Get model and load model from checkpoint path
     model = get_model(tokenizer=tokenizer, embedding_matrix = embeding_matrix, rnn_cell= model_type)
@@ -71,7 +74,7 @@ async def test(test_data_dir, labId, ckpt_number, model_type, sample_model_dir =
 
     return {
             "test_acc": test_acc,
-            "model_checkpoint_number": ckpt_number
+            "model_checkpoint_number": ckpt_number or "Invalid"
           } 
 
 if __name__ == '__main__':

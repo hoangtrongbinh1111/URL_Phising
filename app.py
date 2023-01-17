@@ -68,7 +68,6 @@ async def start_testing(data):
 
 async def start_infering(data):
     response = await infer(data["url_sample"],data["labId"],data["ckpt_number"],data["model_type"])
-    print(response)
     await sio.emit(f'receive_infering_process',json.dumps({
         "response": response,
         "labId" : data["labId"],
@@ -76,11 +75,18 @@ async def start_infering(data):
     }))
     await sio.sleep(0.1)
 
-async def start_comparing(data):
-    responseTesting = await test(data["test_data_dir"],data["labId"],data["ckpt_number"],data["model_type"])
-    responseComparing = await test(data["test_data_dir"],data["labId"],data["ckpt_number"],data["model_type"], data["sample_model_dir"])
-    await sio.emit(f'receive_comparing_process',json.dumps({
-        "responseTesting": responseTesting,
+async def start_comparing_phase_testing(data):
+    responseComparing = await test(data["test_data_dir"],data["labId"],None,data["model_type"], data["sample_model_dir"])
+    await sio.emit(f'receive_comparing_process_phase_testing',json.dumps({
+        "responseComparing": responseComparing,
+        "labId" : data["labId"],
+        "compareId": data["compareId"]
+    }))
+    await sio.sleep(0.1)
+
+async def start_comparing_phase_infering(data):
+    responseComparing = await infer(data["url_sample"],data["labId"],None,data["model_type"], data["sample_model_dir"])
+    await sio.emit(f'receive_comparing_process_phase_testing',json.dumps({
         "responseComparing": responseComparing,
         "labId" : data["labId"],
         "compareId": data["compareId"]
@@ -126,9 +132,13 @@ async def start_infering_listener(data):
 async def start_reviewing_dataset_listener(data):
     Thread(target= await start_reviewing_dataset(data)).start()
 
-@sio.on("start_comparing")
+@sio.on("start_comparing_phase_testing")
 async def start_comparing_listener(data):
-    Thread(target= await start_comparing(data)).start()
+    Thread(target= await start_comparing_phase_testing(data)).start()
+
+@sio.on("start_comparing_phase_infering")
+async def start_comparing_infering_listener(data):
+    Thread(target= await start_comparing_phase_infering(data)).start()
 
 @sio.event
 async def disconnect():

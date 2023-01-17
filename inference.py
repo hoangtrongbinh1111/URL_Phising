@@ -10,7 +10,7 @@ import numpy as np
 int2label = {0: "normal", 1: "phishing"}
 
 
-async def infer(url_sample, labId, ckpt_number, model_type):
+async def infer(url_sample, labId, ckpt_number, model_type, sample_model_dir = ''):
     """
     Inference sample from selected models.
 
@@ -34,7 +34,10 @@ async def infer(url_sample, labId, ckpt_number, model_type):
 
     """
     #Configure model directory
-    model_dir = f'./modelDir/{labId}/log_train/{model_type}'
+    if sample_model_dir:
+      model_dir = sample_model_dir
+    else:
+      model_dir = f'./modelDir/{labId}/log_train/{model_type}'
 
     #Load tokenizer from file
     tokenizer_file = open(os.path.join (model_dir,'tokenizer.pkl'), 'rb')
@@ -47,7 +50,10 @@ async def infer(url_sample, labId, ckpt_number, model_type):
     embeding_matrix_file.close()
 
     #checkpoint path
-    ckpt_path = os.path.join (model_dir, 'ckpt-'+str (ckpt_number))
+    if sample_model_dir:
+      ckpt_path =  os.path.join (model_dir, 'ckpt')
+    else:
+      ckpt_path =  os.path.join (model_dir, 'ckpt-'+str (ckpt_number))
 
     # Craete model and load weights from checkpoint path
     model = get_model(tokenizer=tokenizer, embedding_matrix = embeding_matrix, rnn_cell= model_type)
@@ -71,7 +77,7 @@ async def infer(url_sample, labId, ckpt_number, model_type):
         "label": label,
         "score": score,
         "url": url_sample,
-        "model_checkpoint_number": ckpt_number
+        "model_checkpoint_number": ckpt_number or "Invalid"
         }
 
 
