@@ -8,5 +8,6 @@ services:
       - .:/app
       - /home/cnm9/HoangTrongBinh/ATTT_Project/modelDir:/app/modelDir
       - /home/cnm9/HoangTrongBinh/ATTT_Project/datasetDir:/app/datasetDir
+      - /home/cnm9/HoangTrongBinh/ATTT_Project/sampleDir:/app/sampleDir
     ports:
       - 5678:5678

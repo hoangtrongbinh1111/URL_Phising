@@ -76,6 +76,17 @@ async def start_infering(data):
     }))
     await sio.sleep(0.1)
 
+async def start_comparing(data):
+    responseTesting = await test(data["test_data_dir"],data["labId"],data["ckpt_number"],data["model_type"])
+    responseComparing = await test(data["test_data_dir"],data["labId"],data["ckpt_number"],data["model_type"], data["sample_model_dir"])
+    await sio.emit(f'receive_comparing_process',json.dumps({
+        "responseTesting": responseTesting,
+        "responseComparing": responseComparing,
+        "labId" : data["labId"],
+        "compareId": data["compareId"]
+    }))
+    await sio.sleep(0.1)
+
 async def start_reviewing_dataset(data):
     trainX, valX, trainY, valY, tokenizer, embedding_matrix = get_train_data(data["data_dir"], data["val_size"])
     model_dir = f'./modelDir/{data["labId"]}/log_train/{data["model_type"]}'
@@ -115,6 +126,9 @@ async def start_infering_listener(data):
 async def start_reviewing_dataset_listener(data):
     Thread(target= await start_reviewing_dataset(data)).start()
 
+@sio.on("start_comparing")
+async def start_comparing_listener(data):
+    Thread(target= await start_comparing(data)).start()
 
 @sio.event
 async def disconnect():
